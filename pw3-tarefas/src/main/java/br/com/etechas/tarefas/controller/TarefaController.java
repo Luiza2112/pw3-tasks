@@ -5,26 +5,37 @@ import br.com.etechas.tarefas.service.TarefaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/tarefas")
+@CrossOrigin(origins = "*")
 public class TarefaController {
     @Autowired
-    private TarefaService service;
+    private TarefaService tarefaService;
 
     @GetMapping
     public List<TarefaResponseDTO> listar(){
-        return service.findAll();
+        return tarefaService.findAll();
     }
 
+    /*@DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id){
+        try{
+            tarefaService.excluirPorId(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT)
+        } catch(RuntimeExcepion e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND)
+        }
+    }*/
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(Long id){
-            return service.excluirPorId(id);
+    public ResponseEntity<Void> deletar(@PathVariable Long id){
+        if(tarefaService.excluirPorId(id)){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

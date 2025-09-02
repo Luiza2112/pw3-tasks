@@ -2,6 +2,7 @@
 
 package br.com.etechas.tarefas.service;
 
+import br.com.etechas.tarefas.dto.TarefaRegisterDTO;
 import br.com.etechas.tarefas.dto.TarefaResponseDTO;
 import br.com.etechas.tarefas.entity.Tarefa;
 import br.com.etechas.tarefas.enums.StatusEnum;
@@ -28,19 +29,30 @@ public class TarefaService {
     public List<TarefaResponseDTO> findAll(){return tarefaMapper.toResponseDTOList(tarefaRepository.findAll());
     }
 
-    public ResponseEntity<Void> excluirPorId(Long id){
-        try {
-             Tarefa tarefa = tarefaRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Não existe uma tarefa com o id  " + id));
+    public ResponseEntity<TarefaRegisterDTO> cadastrar(){
+        /**/
+    }
 
-             if (tarefa.getStatus() == StatusEnum.PENDING){
-                 tarefaRepository.delete(tarefa);
-             }else{
-                 throw new RuntimeException("Tarefa em andamento ou concluida.");
-             }
-        }catch (Exception e){
-            throw new RuntimeException("Erro na busca da tarefa pelo id:  " + HttpStatus.NO_CONTENT);
+    public boolean excluirPorId(Long id){
+        var tarefa = tarefaRepository.findById(id);
+        /*tarefa.isPresent() && tarefa.get().isPending()*/
+        /*&& tarefa.get().getStatus().equals(StatusEnum.PENDING*/
+        if(tarefa.isEmpty()){
+            return false;
         }
-        return null;
+        if(tarefa.get().isPending()){
+            tarefaRepository.deleteById(id);
+            return true;
+        }
+        throw new RuntimeException("Tarefa em progresso ou concluída");
+        /*Tarefa tarefa = tarefaRepository.findById(id).
+            orElseThrow(() -> new RuntimeException("Não existe uma tarefa com o id  " + id));
+
+            if (tarefa.getStatus() == StatusEnum.PENDING){
+                tarefaRepository.delete(tarefa);
+            }else{
+                throw new RuntimeException("Tarefa em andamento ou concluida.");
+            }
+            throw new RuntimeException("Erro na busca da tarefa pelo id:  "); */
     }
 }
