@@ -29,8 +29,12 @@ public class TarefaService {
     public List<TarefaResponseDTO> findAll(){return tarefaMapper.toResponseDTOList(tarefaRepository.findAll());
     }
 
-    public ResponseEntity<TarefaRegisterDTO> cadastrar(){
-        /**/
+    public TarefaResponseDTO cadastrar(TarefaRegisterDTO novaTarefa){
+        Tarefa tarefa = tarefaMapper.toEntity(novaTarefa);
+
+        tarefaRepository.save(tarefa);
+
+        return tarefaMapper.toResponseDTO(tarefa); // Retorna a vizualização da tarefa, se for necessário
     }
 
     public boolean excluirPorId(Long id){
