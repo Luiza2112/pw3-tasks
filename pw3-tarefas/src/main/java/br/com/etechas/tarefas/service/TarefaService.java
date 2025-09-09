@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -31,8 +32,16 @@ public class TarefaService {
 
     public TarefaResponseDTO cadastrar(TarefaRegisterDTO novaTarefa){
         Tarefa tarefa = tarefaMapper.toEntity(novaTarefa);
+        tarefa.setStatus(StatusEnum.PENDING); // Sempre pendente ?
 
-        tarefaRepository.save(tarefa);
+        LocalDate data = tarefa.getDataLimite();
+        LocalDate dataAtual = LocalDate.now();
+
+        if (data.isBefore(dataAtual)){
+            throw new RuntimeException("A data da tarefa não pode ser menor que a data atual.");
+        }else{
+            tarefaRepository.save(tarefa);
+        }
 
         return tarefaMapper.toResponseDTO(tarefa); // Retorna a vizualização da tarefa, se for necessário
     }
