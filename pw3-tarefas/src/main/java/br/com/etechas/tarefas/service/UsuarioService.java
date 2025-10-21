@@ -9,13 +9,16 @@ import br.com.etechas.tarefas.mapper.UsuarioMapper;
 import br.com.etechas.tarefas.repository.TarefaRepository;
 import br.com.etechas.tarefas.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class UsuarioService {
+public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -23,6 +26,7 @@ public class UsuarioService {
     @Autowired
     private UsuarioMapper usuarioMapper;
 
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public UsuarioResponseDTO registrar(UsuarioCadastroDTO cadastro){
@@ -46,4 +50,12 @@ public class UsuarioService {
     public List<UsuarioResponseDTO> findAll() {
         return usuarioMapper.toUsuarioResponseDTOList(usuarioRepository.findAll());
     }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return usuarioRepository.findByUsername(username)
+                .orElseThrow(() ->new UsernameNotFoundException(
+                        ("Usuario" + username + "não encontrado")));
+    }
+
 }
