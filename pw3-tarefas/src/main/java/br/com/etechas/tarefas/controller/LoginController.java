@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/login")
-
 public class LoginController {
 
     @Autowired
@@ -26,11 +25,10 @@ public class LoginController {
     private JWTHolder jwtHolder;
 
     @PostMapping
-    public ResponseEntity<LoginResponseDTO>autenticar(
-            @RequestBody LoginRequestDTO loginRequest){
+    public ResponseEntity<LoginResponseDTO>autenticar(@RequestBody LoginRequestDTO loginRequest){
         var autenticado = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.usuario(),
-                        loginRequest.senha()));
+                new UsernamePasswordAuthenticationToken(loginRequest.username(),
+                        loginRequest.password()));
 
         final String token = jwtHolder.generateToken((UserDetails) autenticado.getPrincipal());
         return ResponseEntity.ok(new LoginResponseDTO(token));
